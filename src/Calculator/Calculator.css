@@ -1,0 +1,11 @@
+#location-button {
+    color: red;
+}
+
+.google-maps-container {
+    min-height: 350px;
+}
+
+.form-group label {
+    text-align: right;
+}

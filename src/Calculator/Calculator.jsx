@@ -2,6 +2,7 @@ import React from 'react';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
 import MapAPI from '../MapAPI/MapAPI';
+import * as moonAlgorithms from './Algorithms.js';
 
 export default class Calculator extends React.Component {
     constructor(props) {
@@ -14,13 +15,17 @@ export default class Calculator extends React.Component {
 
     // When app loads for the first time
     componentDidMount() {
-        // this.resetArray();
+        this.getCurrentDate();
     }
 
     resetArray() {
         // const array = [];
         // this.setState({array});
     }   
+
+    getCurrentDate() {
+
+    }
 
     render() {
         // const {array} = this.state;
@@ -37,10 +42,10 @@ export default class Calculator extends React.Component {
                         <div className="location-input-container" class="form-group row">
                             <label class="col-3 col-lg-2 col-form-label">Location</label>
                             <div class="col-4">
-                                <input class="form-control" type="text" placeholder="Latitude" id="location-input-latitude"/>
+                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude"/>
                             </div>
                             <div class="col-4">
-                                <input class="form-control" type="text" placeholder="Longitude" id="location-input-longitude"/>
+                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude"/>
                             </div>
                         </div>
                         <div className="location-button-container" class="form-group row">

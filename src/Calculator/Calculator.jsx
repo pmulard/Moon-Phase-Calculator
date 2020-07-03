@@ -158,7 +158,92 @@ export default class Calculator extends React.Component {
         console.log(moonIllum);
         console.log(moonCoord);
         console.log(moonPos);
-
-        
+        console.log(this.getPhasePercent());
+        console.log(this.getRiseTime());
+        console.log(this.getSetTime());
     }
+
+    getPhaseName = () => {
+        const date = this.state.date;
+        const moonIllum = moonAlgorithms.getMoonIllumination(date);
+        const phase = moonIllum.phase;
+        // if (phase >= 0 && phase )
+    }
+
+    getPhasePercent = () => {
+        const date = this.state.date;
+        const moonIllum = moonAlgorithms.getMoonIllumination(date);
+        const fraction = moonIllum.fraction;
+        return (this.round(fraction, 4)*100);
+    }
+
+
+
+    /*
+     * MOON Rise and Set time calculations. Formulas based on a table based method
+     * explained here: http://www.stargazing.net/kepler/moonrise.html
+    */
+   
+    getRiseTime = () => {
+        const array = [];
+        let date = this.state.date,
+            lat = this.state.latitude,
+            lon = this.state.longitude;
+            
+        // Create table to hold angles with corresponding minute of the day
+        for (let i=0; i < 1440; i++) {
+            date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
+            const angle = moonAlgorithms.getMoonPosition(date, lat, lon).altitude;
+            array.push([i, angle]);
+        }
+
+        let riseMinute;
+        // Find the rise time when the moon altitude transitions from (-) to (+)
+        for (let j=0; j < 1440-1; j++) {
+            let angle1 = array[j][1],
+                angle2 = array[j+1][1];
+            
+            if (angle1 <= 0 && angle2 >= 0) {
+                riseMinute = array[j+1][0];
+            }
+        }
+        
+        date.setHours(0,riseMinute,0,0);
+        return date;
+    }
+
+    getSetTime = () => {
+        const array = [];
+        let date = this.state.date,
+            lat = this.state.latitude,
+            lon = this.state.longitude;
+            
+        // Create table to hold angles with corresponding minute of the day
+        for (let i=0; i < 1440; i++) {
+            date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
+            const angle = moonAlgorithms.getMoonPosition(date, lat, lon).altitude;
+            array.push([i, angle]);
+        }
+
+        let setMinute;
+        // Find the set time when the moon altitude transitions from (+) to (-)
+        for (let j=0; j < 1440-1; j++) {
+            let angle1 = array[j][1],
+                angle2 = array[j+1][1];
+            
+            if (angle1 >= 0 && angle2 <= 0) {
+                setMinute = array[j+1][0];
+            }
+        }
+        
+        date.setHours(0,setMinute,0,0)
+        return date;
+    }
+
+    // Copied from https://www.jacklmoore.com/notes/rounding-in-javascript/
+    round = (value, decimals) => {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
+
+    
 }

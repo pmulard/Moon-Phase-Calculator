@@ -30,7 +30,7 @@ var dayMS = 24*60*60*1000, // One day in milliseconds
 // We will be referencing this as (j) when inputting as a parameter.
 const toJulian = (date) => { return date.valueOf() / dayMS - 0.5 + J1970; }
 // Julian -> Date obj
-// const fromJulian = (j) => { return new Date((j + 0.5 - J1970) * dayMS); }
+const fromJulian = (j) => { return new Date((j + 0.5 - J1970) * dayMS); }
 // We will be referencing this as (d) when inputting as a parameter.
 const toDays = (date) => { return toJulian(date) - J2000; }
 

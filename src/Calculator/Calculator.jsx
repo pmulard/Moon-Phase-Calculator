@@ -9,22 +9,41 @@ export default class Calculator extends React.Component {
         super(props)
 
         this.state = {
-            // array: []
+            date: 0,
+            latitude: 0,
+            longitutde: 0,
+            altitude: 0,
+            moonIllumination: {},
+            moonCoords: {},
+            moonPosition: {}
         };
     }
 
     // When app loads for the first time
     componentDidMount() {
-        this.getCurrentDate();
     }
 
-    resetArray() {
-        // const array = [];
-        // this.setState({array});
+    clear() {
+        const date = 0;
+        const latitude = 0;
+        const longitude = 0;
+        const altitude = 0;
+        const moonIllumination = {};
+        const moonCoords = {};
+        const moonPosition = {};
+        this.setState(
+            {date},
+            {latitude},
+            {longitude},
+            {altitude},
+            {moonIllumination},
+            {moonCoords},
+            {moonPosition}
+        );
     }   
 
-    getCurrentDate() {
-
+    calculateMoonData() {
+        const currentDate = document.querySelector('.')
     }
 
     render() {

@@ -97,6 +97,7 @@ const getMoonPosition = (date, lat, lon) => {
     };
 }
 
+// More info here: https://www.science-on-stage.eu/images/download/iStage_10_Phases_of_the_Moon.pdf
 const getMoonIllumination = (date) => {
 
     var d = toDays(date),

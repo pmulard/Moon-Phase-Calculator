@@ -9,18 +9,17 @@ export default class Calculator extends React.Component {
         super(props)
 
         this.state = {
-            date: 0,
-            latitude: 0,
-            longitutde: 0,
-            altitude: 0,
             moonIllumination: {},
             moonCoords: {},
             moonPosition: {}
         };
+
+        this.setDate = this.handleChange.bind(this);
     }
 
     // When app loads for the first time
     componentDidMount() {
+        
     }
 
     clear() {
@@ -42,12 +41,7 @@ export default class Calculator extends React.Component {
         );
     }   
 
-    calculateMoonData() {
-        const currentDate = document.querySelector('.')
-    }
-
     render() {
-        // const {array} = this.state;
         return (
             <div className="app-container" class="app-container row justify-content-center">
                 <div className="block-container" class="col-sm-12 col-md-10 col-lg-8 d-flex justify-content-center">
@@ -55,16 +49,16 @@ export default class Calculator extends React.Component {
                         <div className="date-container" class="form-group row">
                             <label for="date-input" class="col-3 col-lg-2 col-form-label">Date</label>
                             <div class="col-4">
-                                <input class="form-control" type="date" value="2011-08-19" id="date-input"/>
+                                <input class="form-control" type="date" value="2011-08-19" id="date-input" value={this.state.date} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="location-input-container" class="form-group row">
                             <label class="col-3 col-lg-2 col-form-label">Location</label>
                             <div class="col-4">
-                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude"/>
+                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude" value={this.state.latitude} onChange={this.handleChange}/>
                             </div>
                             <div class="col-4">
-                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude"/>
+                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude" value={this.state.longitude} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="location-button-container" class="form-group row">
@@ -86,7 +80,7 @@ export default class Calculator extends React.Component {
                         <div className="altitude-input-container" class="form-group row">
                             <label class="col-3 col-lg-2 col-form-label">Altitude</label>
                             <div class="input-group mb-3 col-6 col-lg-4">
-                                <input type="number" min="0" class="form-control" placeholder="0" aria-label="Recipient's username" aria-describedby="basic-addon2"/>
+                                <input type="number" min="0" class="form-control" placeholder="0" aria-label="Recipient's username" aria-describedby="basic-addon2" value={this.state.altitude} onChange={this.handleChange}/>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="basic-addon2">meters</span>
                                 </div>
@@ -110,4 +104,10 @@ export default class Calculator extends React.Component {
             </div>
         );
     }
+
+    // Handles state changes for state objects
+    handleChange = e => {
+        this.setState({ [e.target.name]: e.target.value });
+        console.log(e.target.value);
+    };
 }

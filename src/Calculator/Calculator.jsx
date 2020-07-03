@@ -11,7 +11,11 @@ export default class Calculator extends React.Component {
         this.state = {
             moonIllumination: {},
             moonCoords: {},
-            moonPosition: {}
+            moonPosition: {},
+            date: new Date(),
+            latitude: 39.7392,
+            longitude: -104.9903,
+            altitude: 1000
         };
 
         this.setDate = this.handleChange.bind(this);
@@ -91,7 +95,7 @@ export default class Calculator extends React.Component {
                             <div class="col-1 col-lg-2">
                             </div>
                             <div class="col-7 col-lg-6">
-                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block">Get My Moon</button>
+                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={this.calculateMoon}>Get My Moon</button>
                             </div>
                             <div class="col-3 col-lg-2">
                                 <button type="button" class="execute-button btn btn-danger btn-lg btn-block">Clear</button>
@@ -105,9 +109,56 @@ export default class Calculator extends React.Component {
         );
     }
 
-    // Handles state changes for state objects
-    handleChange = e => {
+    // Handles state changes for local objects
+    handleChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
         console.log(e.target.value);
     };
+
+    calculateMoon = () => {
+        const date = this.state.date;
+        const latitude = this.state.latitude;
+        const longitude = this.state.longitude;
+        const altitude = this.state.altitude;
+
+        // Retrieving the moon objects that hold data
+        const moonCoord = moonAlgorithms.moonCoords(date);
+        const moonPos = moonAlgorithms.getMoonPosition(date, latitude, longitude, altitude);
+        const moonIllum = moonAlgorithms.getMoonIllumination(date);
+
+        /*
+         * Moon Fraction - illuminated fraction of the moon;
+         * varies from 0.0 (new moon) to 1.0 (full moon)
+        */
+        const fraction = moonIllum.fraction;
+
+        /*
+         *  Moon Phase - moon phase; varies from 0.0 to 1.0:
+         *      0	New Moon
+         *          Waxing Crescent
+         *   0.25	First Quarter
+         *          Waxing Gibbous
+         *    0.5	Full Moon
+         *          Waning Gibbous
+         *   0.75	Last Quarter
+         *          Waning Crescent
+        */
+        const phase = moonIllum.phase;
+
+        /*
+         * Moon Angle - midpoint angle in radians of the 
+         * illuminated limb of the moon reckoned eastward 
+         * from the north point of the disk; the moon is 
+         * waxing if the angle is negative, and waning if 
+         * positive
+        */
+        const angle = moonIllum.angle;
+
+
+        console.log(moonIllum);
+        console.log(moonCoord);
+        console.log(moonPos);
+
+        
+    }
 }

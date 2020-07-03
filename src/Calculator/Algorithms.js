@@ -30,7 +30,7 @@ var dayMS = 24*60*60*1000, // One day in milliseconds
 // We will be referencing this as (j) when inputting as a parameter.
 const toJulian = (date) => { return date.valueOf() / dayMS - 0.5 + J1970; }
 // Julian -> Date obj
-const fromJulian = (j) => { return new Date((j + 0.5 - J1970) * dayMS); }
+// const fromJulian = (j) => { return new Date((j + 0.5 - J1970) * dayMS); }
 // We will be referencing this as (d) when inputting as a parameter.
 const toDays = (date) => { return toJulian(date) - J2000; }
 
@@ -59,7 +59,7 @@ function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
   
   More info here: https://skyandtelescope.org/astronomy-resources/right-ascension-declination-celestial-coordinates/
 */
-const moonCoords = (d) => { // geocentric ecliptic coordinates of the moon
+export const moonCoords = (d) => { // geocentric ecliptic coordinates of the moon
                             // d = toDays(date)
 
     var L = rad * (218.316 + 13.176396 * d), // ecliptic longitude
@@ -77,7 +77,8 @@ const moonCoords = (d) => { // geocentric ecliptic coordinates of the moon
     };
 }
 
-const getMoonPosition = (date, lat, lon) => {
+// eslint-disable-next-line
+export const getMoonPosition = (date, lat, lon) => {
 
     var lw  = rad * -lon,
         phi = rad * lat,
@@ -87,8 +88,8 @@ const getMoonPosition = (date, lat, lon) => {
         H = siderealTime(d, lw) - coord.ra,
         h = altitude(H, phi, coord.dec);
 
-    // altitude correction for refraction
-    h = h + rad * 0.017 / tan(h + rad * 10.26 / (h + rad * 5.10));
+        // altitude correction for refraction
+        h = h + rad * 0.017 / tan(h + rad * 10.26 / (h + rad * 5.10));
 
     return {
         azimuth: azimuth(H, phi, coord.dec),
@@ -98,7 +99,8 @@ const getMoonPosition = (date, lat, lon) => {
 }
 
 // More info here: https://www.science-on-stage.eu/images/download/iStage_10_Phases_of_the_Moon.pdf
-const getMoonIllumination = (date) => {
+// eslint-disable-next-line
+export const getMoonIllumination = (date) => {
 
     var d = toDays(date),
         s = sunCoords(d), // See SUN section below
@@ -133,7 +135,7 @@ const eclipticLongitude = (M) => {
         P = rad * 102.9372; // perihelion of the Earth
 
     return M + C + P + PI;
-}
+} 
 
 const sunCoords = (d) => {
 

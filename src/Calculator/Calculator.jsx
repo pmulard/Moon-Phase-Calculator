@@ -2,6 +2,7 @@ import React from 'react';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
 import MapAPI from '../MapAPI/MapAPI';
+import Graphic from '../Graphic/Graphic';
 import * as moonAlgorithms from './Algorithms.js';
 
 export default class Calculator extends React.Component {
@@ -9,11 +10,7 @@ export default class Calculator extends React.Component {
         super(props)
 
         this.state = {
-            moonIllumination: {},
-            moonCoords: {},
-            moonPosition: {},
             date: new Date(),
-            
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -25,33 +22,22 @@ export default class Calculator extends React.Component {
     }
 
     clear() {
-        const date = 0;
-        const latitude = 0;
-        const longitude = 0;
-        const altitude = 0;
-        const moonIllumination = {};
-        const moonCoords = {};
-        const moonPosition = {};
-        this.setState(
-            {date},
-            {latitude},
-            {longitude},
-            {altitude},
-            {moonIllumination},
-            {moonCoords},
-            {moonPosition}
-        );
+        
     }   
 
     render() {
         return (
-            <div className="app-container" class="app-container row justify-content-center">
-                <div className="block-container" class="col-sm-12 col-md-10 col-lg-8 d-flex justify-content-center">
-                    <div className="form-container" class="form container-fluid">
+            
+            <div className="app-container" class="app-container-fluid row justify-content-center">
+                <div className="block-container" class="col-sm-12 col-md-10 col-lg-8 d-flex justify-content-center d-flex flex-column">
+                    <div class="graphic-container">
+                        <Graphic></Graphic>
+                    </div>  
+                    <div className="form-container" class="form container-fluid d-flex flex-column">
                         <div className="date-container" class="form-group row">
                             <label for="date-input" class="col-3 col-lg-2 col-form-label">Date</label>
                             <div class="col-4">
-                                <input class="form-control" type="date" value="2011-08-19" id="date-input" placeholder="" name="inputDate" value={this.state.inputDate} onChange={this.handleChange}/>
+                                <input class="form-control" type="date" id="date-input" placeholder="" name="inputDate" value={this.state.inputDate} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="location-input-container" class="form-group row">
@@ -93,7 +79,7 @@ export default class Calculator extends React.Component {
                             <div class="col-1 col-lg-2">
                             </div>
                             <div class="col-7 col-lg-6">
-                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={this.calculateMoon}>Get My Moon</button>
+                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={Graphic.setData()}>Get My Moon</button>
                             </div>
                             <div class="col-3 col-lg-2">
                                 <button type="button" class="execute-button btn btn-danger btn-lg btn-block">Clear</button>
@@ -111,7 +97,6 @@ export default class Calculator extends React.Component {
     handleChange = (e) => {
         e.preventDefault();
         this.setState({ [e.target.name]: e.target.value });
-        console.log(e.target.value);
     };
 
     setDateState = () => {
@@ -132,23 +117,30 @@ export default class Calculator extends React.Component {
 
 
     calculateMoon = () => {
-        console.log(this.state.latitude, this.state.longitude, this.state.inputDate);
         this.setDateState();
-        const date = this.state.date;
-        const lat = this.state.latitude;
-        const lon = this.state.longitude;
-        const altitude = this.state.altitude;
+        var date_ = this.state.date,
+            lat = this.state.latitude,
+            lon = this.state.longitude;
+
+        return {
+            date: date_,
+            latitude: lat,
+            longitude: lon,
+            riseTime: moonAlgorithms.getMoonRiseTime(date_, lat, lon),
+            setTime: moonAlgorithms.getMoonSetTime(date_, lat, lon),
+            phaseName: 'Sample Name',
+            phasePercent: this.getPhasePercent()
+        };
+        
 
         // Retrieving the moon objects that hold data
-        const moonCoord = moonAlgorithms.moonCoords(date);
-        const moonPos = moonAlgorithms.getMoonPosition(date, lat, lon, altitude);
-        const moonIllum = moonAlgorithms.getMoonIllumination(date);
+        // const moonIllum = moonAlgorithms.getMoonIllumination(date);
 
         /*
          * Moon Fraction - illuminated fraction of the moon;
          * varies from 0.0 (new moon) to 1.0 (full moon)
         */
-        const fraction = moonIllum.fraction;
+        // const fraction = moonIllum.fraction;
 
         /*
          *  Moon Phase - moon phase; varies from 0.0 to 1.0:
@@ -161,7 +153,7 @@ export default class Calculator extends React.Component {
          *   0.75	Last Quarter
          *          Waning Crescent
         */
-        const phase = moonIllum.phase;
+        // const phase = moonIllum.phase;
 
         /*
          * Moon Angle - midpoint angle in radians of the 
@@ -170,15 +162,8 @@ export default class Calculator extends React.Component {
          * waxing if the angle is negative, and waning if 
          * positive
         */
-        const angle = moonIllum.angle;
-
-
-        console.log(moonIllum);
-        console.log(moonCoord);
-        console.log(moonPos);
-        console.log(this.getPhasePercent());
-        console.log(moonAlgorithms.getMoonRiseTime(date, lat, lon));
-        console.log(moonAlgorithms.getMoonSetTime(date, lat, lon));
+        // const angle = moonIllum.angle;
+        
     };
 
     getPhaseName = () => {

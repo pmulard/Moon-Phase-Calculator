@@ -13,9 +13,6 @@ export default class Calculator extends React.Component {
             moonCoords: {},
             moonPosition: {},
             date: new Date(),
-            latitude: 39.7392,
-            longitude: -104.9903,
-            altitude: 1000
         };
 
         this.setDate = this.handleChange.bind(this);
@@ -115,15 +112,18 @@ export default class Calculator extends React.Component {
         console.log(e.target.value);
     };
 
+
+
+
     calculateMoon = () => {
         const date = this.state.date;
-        const latitude = this.state.latitude;
-        const longitude = this.state.longitude;
+        const lat = this.state.latitude;
+        const lon = this.state.longitude;
         const altitude = this.state.altitude;
 
         // Retrieving the moon objects that hold data
         const moonCoord = moonAlgorithms.moonCoords(date);
-        const moonPos = moonAlgorithms.getMoonPosition(date, latitude, longitude, altitude);
+        const moonPos = moonAlgorithms.getMoonPosition(date, lat, lon, altitude);
         const moonIllum = moonAlgorithms.getMoonIllumination(date);
 
         /*
@@ -159,8 +159,8 @@ export default class Calculator extends React.Component {
         console.log(moonCoord);
         console.log(moonPos);
         console.log(this.getPhasePercent());
-        console.log(this.getRiseTime());
-        console.log(this.getSetTime());
+        console.log(moonAlgorithms.getMoonRiseTime(date, lat, lon));
+        console.log(moonAlgorithms.getMoonSetTime(date, lat, lon));
     }
 
     getPhaseName = () => {
@@ -177,73 +177,10 @@ export default class Calculator extends React.Component {
         return (this.round(fraction, 4)*100);
     }
 
-
-
-    /*
-     * MOON Rise and Set time calculations. Formulas based on a table based method
-     * explained here: http://www.stargazing.net/kepler/moonrise.html
-    */
-   
-    getRiseTime = () => {
-        const array = [];
-        let date = this.state.date,
-            lat = this.state.latitude,
-            lon = this.state.longitude;
-            
-        // Create table to hold angles with corresponding minute of the day
-        for (let i=0; i < 1440; i++) {
-            date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
-            const angle = moonAlgorithms.getMoonPosition(date, lat, lon).altitude;
-            array.push([i, angle]);
-        }
-
-        let riseMinute;
-        // Find the rise time when the moon altitude transitions from (-) to (+)
-        for (let j=0; j < 1440-1; j++) {
-            let angle1 = array[j][1],
-                angle2 = array[j+1][1];
-            
-            if (angle1 <= 0 && angle2 >= 0) {
-                riseMinute = array[j+1][0];
-            }
-        }
-        
-        date.setHours(0,riseMinute,0,0);
-        return date;
-    }
-
-    getSetTime = () => {
-        const array = [];
-        let date = this.state.date,
-            lat = this.state.latitude,
-            lon = this.state.longitude;
-            
-        // Create table to hold angles with corresponding minute of the day
-        for (let i=0; i < 1440; i++) {
-            date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
-            const angle = moonAlgorithms.getMoonPosition(date, lat, lon).altitude;
-            array.push([i, angle]);
-        }
-
-        let setMinute;
-        // Find the set time when the moon altitude transitions from (+) to (-)
-        for (let j=0; j < 1440-1; j++) {
-            let angle1 = array[j][1],
-                angle2 = array[j+1][1];
-            
-            if (angle1 >= 0 && angle2 <= 0) {
-                setMinute = array[j+1][0];
-            }
-        }
-        
-        date.setHours(0,setMinute,0,0)
-        return date;
-    }
-
     // Copied from https://www.jacklmoore.com/notes/rounding-in-javascript/
     round = (value, decimals) => {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    }
+    }    
 
     
 }

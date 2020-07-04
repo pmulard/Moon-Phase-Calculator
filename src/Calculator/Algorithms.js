@@ -22,7 +22,7 @@ var PI = Math.PI,
                   https://quasar.as.utexas.edu/BillInfo/JulianDatesG.html
   Below are date and time conversions to and from Julian.
 */
-var dayMS = 24*60*60*1000, // One day in milliseconds
+var dayMS = 24*60*60*1000,
     J1970 = 2440588, // Needed for using the built in javascript date function.
     J2000 = 2451545; // https://www.geeksforgeeks.org/javascript-date-valueof-function/ 
 
@@ -44,10 +44,8 @@ var e = rad * 23.4397; // obliquity of the Earth (axial tilt)
 
 function rightAscension(lon, lat) { return atan(sin(lon) * cos(e) - tan(lat) * sin(e), cos(lon)); }
 function declination(lon, lat)    { return asin(sin(lat) * cos(e) + cos(lat) * sin(e) * sin(lon)); }
-
 function azimuth(H, phi, dec)  { return atan(sin(H), cos(H) * sin(phi) - tan(dec) * cos(phi)); }
 function altitude(H, phi, dec) { return asin(sin(phi) * sin(dec) + cos(phi) * cos(dec) * cos(H)); }
-
 function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
 
 
@@ -59,8 +57,8 @@ function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
   
   More info here: https://skyandtelescope.org/astronomy-resources/right-ascension-declination-celestial-coordinates/
 */
-export const moonCoords = (d) => { // geocentric ecliptic coordinates of the moon
-                            // d = toDays(date)
+export const moonCoords = (d) => {  // geocentric ecliptic coordinates of the moon
+                                    // d = toDays(date)
 
     var L = rad * (218.316 + 13.176396 * d), // ecliptic longitude
         M = rad * (134.963 + 13.064993 * d), // mean anomaly
@@ -146,4 +144,62 @@ const sunCoords = (d) => {
         dec: declination(L, 0),
         ra: rightAscension(L, 0)
     };
+}
+
+
+
+/*
+   MOON Rise and Set Times - algorithms created by Peter Mulard
+   Formulas based on a table based method explained here: 
+   http://www.stargazing.net/kepler/moonrise.html
+*/
+
+export const getMoonRiseTime = (date, lat, lon) => {
+    const array = [];
+        
+    // Create table to hold angles with corresponding minute of the day
+    for (let i=0; i < 1440; i++) {
+        date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
+        const angle = getMoonPosition(date, lat, lon).altitude;
+        array.push([i, angle]);
+    }
+
+    let riseMinute;
+    // Find the rise time when the moon altitude transitions from (-) to (+)
+    for (let j=0; j < 1440-1; j++) {
+        let angle1 = array[j][1],
+            angle2 = array[j+1][1];
+        
+        if (angle1 <= 0 && angle2 >= 0) {
+            riseMinute = array[j+1][0];
+        }
+    }
+    
+    date.setHours(0,riseMinute,0,0);
+    return date;
+}
+
+export const getMoonSetTime = (date, lat, lon) => {
+    const array = [];
+        
+    // Create table to hold angles with corresponding minute of the day
+    for (let i=0; i < 1440; i++) {
+        date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
+        const angle = getMoonPosition(date, lat, lon).altitude;
+        array.push([i, angle]);
+    }
+
+    let setMinute;
+    // Find the set time when the moon altitude transitions from (+) to (-)
+    for (let j=0; j < 1440-1; j++) {
+        let angle1 = array[j][1],
+            angle2 = array[j+1][1];
+        
+        if (angle1 >= 0 && angle2 <= 0) {
+            setMinute = array[j+1][0];
+        }
+    }
+    
+    date.setHours(0,setMinute,0,0)
+    return date;
 }

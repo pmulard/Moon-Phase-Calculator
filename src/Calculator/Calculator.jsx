@@ -13,9 +13,10 @@ export default class Calculator extends React.Component {
             moonCoords: {},
             moonPosition: {},
             date: new Date(),
+            
         };
 
-        this.setDate = this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     // When app loads for the first time
@@ -50,16 +51,16 @@ export default class Calculator extends React.Component {
                         <div className="date-container" class="form-group row">
                             <label for="date-input" class="col-3 col-lg-2 col-form-label">Date</label>
                             <div class="col-4">
-                                <input class="form-control" type="date" value="2011-08-19" id="date-input" value={this.state.date} onChange={this.handleChange}/>
+                                <input class="form-control" type="date" value="2011-08-19" id="date-input" placeholder="" name="inputDate" value={this.state.inputDate} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="location-input-container" class="form-group row">
                             <label class="col-3 col-lg-2 col-form-label">Location</label>
                             <div class="col-4">
-                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude" value={this.state.latitude} onChange={this.handleChange}/>
+                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude" name="latitude" value={this.state.latitude} onChange={this.handleChange}/>
                             </div>
                             <div class="col-4">
-                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude" value={this.state.longitude} onChange={this.handleChange}/>
+                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude" name="longitude" value={this.state.longitude} onChange={this.handleChange}/>
                             </div>
                         </div>
                         <div className="location-button-container" class="form-group row">
@@ -81,7 +82,7 @@ export default class Calculator extends React.Component {
                         <div className="altitude-input-container" class="form-group row">
                             <label class="col-3 col-lg-2 col-form-label">Altitude</label>
                             <div class="input-group mb-3 col-6 col-lg-4">
-                                <input type="number" min="0" class="form-control" placeholder="0" aria-label="Recipient's username" aria-describedby="basic-addon2" value={this.state.altitude} onChange={this.handleChange}/>
+                                <input type="number" min="0" class="form-control" placeholder="0" name="altitude" value={this.state.altitude} onChange={this.handleChange}/>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="basic-addon2">meters</span>
                                 </div>
@@ -108,14 +109,31 @@ export default class Calculator extends React.Component {
 
     // Handles state changes for local objects
     handleChange = (e) => {
+        e.preventDefault();
         this.setState({ [e.target.name]: e.target.value });
         console.log(e.target.value);
     };
 
+    setDateState = () => {
+        const inputDate = this.state.inputDate;
+        let YY = parseInt(inputDate.substring(0,4)),
+            MM = parseInt(inputDate.substring(5,7))-1,
+            DD = parseInt(inputDate.substring(8,10)), 
+            dateOBJ = new Date(),
+            hh = dateOBJ.getHours(),
+            mi = dateOBJ.getMinutes(),
+            ss = dateOBJ.getSeconds(),
+            mm = dateOBJ.getMilliseconds();
+
+        const dateValue = new Date(YY, MM, DD, hh, mi, ss);
+        this.setState({date: dateValue});
+    }
 
 
 
     calculateMoon = () => {
+        console.log(this.state.latitude, this.state.longitude, this.state.inputDate);
+        this.setDateState();
         const date = this.state.date;
         const lat = this.state.latitude;
         const lon = this.state.longitude;
@@ -161,26 +179,26 @@ export default class Calculator extends React.Component {
         console.log(this.getPhasePercent());
         console.log(moonAlgorithms.getMoonRiseTime(date, lat, lon));
         console.log(moonAlgorithms.getMoonSetTime(date, lat, lon));
-    }
+    };
 
     getPhaseName = () => {
         const date = this.state.date;
         const moonIllum = moonAlgorithms.getMoonIllumination(date);
         const phase = moonIllum.phase;
         // if (phase >= 0 && phase )
-    }
+    };
 
     getPhasePercent = () => {
         const date = this.state.date;
         const moonIllum = moonAlgorithms.getMoonIllumination(date);
         const fraction = moonIllum.fraction;
         return (this.round(fraction, 4)*100);
-    }
+    };
 
     // Copied from https://www.jacklmoore.com/notes/rounding-in-javascript/
     round = (value, decimals) => {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    }    
+    };
 
     
 }

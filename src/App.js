@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import Calculator from './Calculator/Calculator';
-import Graphic from './Graphic/Graphic';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 

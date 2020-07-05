@@ -11,6 +11,13 @@ export default class Calculator extends React.Component {
 
         this.state = {
             date: new Date(),
+            latitude: '',
+            longitude: '',
+            location: '',
+            riseTime: '',
+            setTime: '',
+            phaseName: '',
+            phasePercent: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -27,11 +34,28 @@ export default class Calculator extends React.Component {
 
     render() {
         return (
-            
             <div className="app-container" class="app-container-fluid row justify-content-center">
                 <div className="block-container" class="col-sm-12 col-md-10 col-lg-8 d-flex justify-content-center d-flex flex-column">
                     <div class="graphic-container">
-                        <Graphic></Graphic>
+                        <div className="app-container" class="app-container row justify-content-center d-flex flex-column">
+                    <div className="date-location-container" class="row justify-content-between">
+                        <div class="col-4" id="date-graphic"></div>
+                        <div class="col-4" id="location-graphic"></div>
+                    </div>
+                    <div className="rise-set-time-container" class="row">
+                        <div class="col-4" id="rise-time-graphic"></div>
+                        <div className="graphic-container" class="col-4">
+                            <img src="" alt="" id="moon-img-graphic"/>
+                        </div>
+                        <div class="col-4" id="set-time-graphic"></div>
+                    </div>
+                    <div className="phase-properties-container" class="row justify-content-center">
+                        <div class="col-4">
+                            <div id="phase-name-graphic"></div>
+                            <div id="phase-percent-graphic"></div>
+                        </div>
+                    </div>
+                </div>
                     </div>  
                     <div className="form-container" class="form container-fluid d-flex flex-column">
                         <div className="date-container" class="form-group row">
@@ -79,7 +103,7 @@ export default class Calculator extends React.Component {
                             <div class="col-1 col-lg-2">
                             </div>
                             <div class="col-7 col-lg-6">
-                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={Graphic.setData()}>Get My Moon</button>
+                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={this.calculateMoon}>Show me the moon-ey!</button>
                             </div>
                             <div class="col-3 col-lg-2">
                                 <button type="button" class="execute-button btn btn-danger btn-lg btn-block">Clear</button>
@@ -114,57 +138,38 @@ export default class Calculator extends React.Component {
         this.setState({date: dateValue});
     }
 
-
-
     calculateMoon = () => {
         this.setDateState();
-        var date_ = this.state.date,
+        var date = this.state.date,
             lat = this.state.latitude,
-            lon = this.state.longitude;
-
-        return {
-            date: date_,
-            latitude: lat,
-            longitude: lon,
-            riseTime: moonAlgorithms.getMoonRiseTime(date_, lat, lon),
-            setTime: moonAlgorithms.getMoonSetTime(date_, lat, lon),
+            lon = this.state.longitude,
+            location = this.formatLatLon(lat, lon),
+            riseTime = moonAlgorithms.getMoonRiseTime(date, lat, lon),
+            setTime = moonAlgorithms.getMoonSetTime(date, lat, lon),
+            phaseName = 'Sample Name',
+            phasePercent = this.getPhasePercent();
+        
+        this.setState({
+            location: this.formatLatLon(lat, lon),
+            riseTime: moonAlgorithms.getMoonRiseTime(date, lat, lon),
+            setTime: moonAlgorithms.getMoonSetTime(date, lat, lon),
             phaseName: 'Sample Name',
             phasePercent: this.getPhasePercent()
-        };
-        
+        })
 
-        // Retrieving the moon objects that hold data
-        // const moonIllum = moonAlgorithms.getMoonIllumination(date);
+        console.log(location, riseTime, setTime, phasePercent);
 
-        /*
-         * Moon Fraction - illuminated fraction of the moon;
-         * varies from 0.0 (new moon) to 1.0 (full moon)
-        */
-        // const fraction = moonIllum.fraction;
-
-        /*
-         *  Moon Phase - moon phase; varies from 0.0 to 1.0:
-         *      0	New Moon
-         *          Waxing Crescent
-         *   0.25	First Quarter
-         *          Waxing Gibbous
-         *    0.5	Full Moon
-         *          Waning Gibbous
-         *   0.75	Last Quarter
-         *          Waning Crescent
-        */
-        // const phase = moonIllum.phase;
-
-        /*
-         * Moon Angle - midpoint angle in radians of the 
-         * illuminated limb of the moon reckoned eastward 
-         * from the north point of the disk; the moon is 
-         * waxing if the angle is negative, and waning if 
-         * positive
-        */
-        // const angle = moonIllum.angle;
-        
+        this.setGraphic();
     };
+
+    setGraphic = () => {
+        document.getElementById("date-graphic").innerHTML = this.state.date;
+        document.getElementById("location-graphic").innerHTML = this.state.location;
+        document.getElementById("rise-time-graphic").innerHTML = this.state.riseTime;
+        document.getElementById("set-time-graphic").innerHTML = this.state.setTime;
+        document.getElementById("phase-name-graphic").innerHTML = this.state.phaseName;
+        document.getElementById("phase-percent-graphic").innerHTML = this.state.phasePercent;
+    }
 
     getPhaseName = () => {
         const date = this.state.date;
@@ -177,7 +182,7 @@ export default class Calculator extends React.Component {
         const date = this.state.date;
         const moonIllum = moonAlgorithms.getMoonIllumination(date);
         const fraction = moonIllum.fraction;
-        return (this.round(fraction, 4)*100);
+        return (this.round(fraction, 4)*100 + '%');
     };
 
     // Copied from https://www.jacklmoore.com/notes/rounding-in-javascript/
@@ -185,5 +190,61 @@ export default class Calculator extends React.Component {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     };
 
+    formatLatLon = (lat, lon) => {
+        let latitude = lat,
+            longitude = lon;
+
+        // Latitude
+        if (lat < 0) {
+            latitude += '\xB0 S'
+        } else if (lat > 0) {
+            latitude += '\xB0 N'
+        } else { // Assertion: 0 degrees
+            latitude += '\xB0'
+        }
+
+        // Longitude
+        if (lon < 0) {
+            longitude += '\xB0 W'
+        } else if (lon > 0) {
+            longitude += '\xB0 E'
+        } else { // Assertion: 0 degrees
+            longitude += '\xB0'
+        }
+
+        return latitude + ' ' + longitude;
+    }
+
     
 }
+
+// Retrieving the moon objects that hold data
+            // const moonIllum = moonAlgorithms.getMoonIllumination(date);
+
+            /*
+            * Moon Fraction - illuminated fraction of the moon;
+            * varies from 0.0 (new moon) to 1.0 (full moon)
+            */
+            // const fraction = moonIllum.fraction;
+
+            /*
+            *  Moon Phase - moon phase; varies from 0.0 to 1.0:
+            *      0	New Moon
+            *          Waxing Crescent
+            *   0.25	First Quarter
+            *          Waxing Gibbous
+            *    0.5	Full Moon
+            *          Waning Gibbous
+            *   0.75	Last Quarter
+            *          Waning Crescent
+            */
+            // const phase = moonIllum.phase;
+
+            /*
+            * Moon Angle - midpoint angle in radians of the 
+            * illuminated limb of the moon reckoned eastward 
+            * from the north point of the disk; the moon is 
+            * waxing if the angle is negative, and waning if 
+            * positive
+            */
+            // const angle = moonIllum.angle;

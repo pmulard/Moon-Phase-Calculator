@@ -164,7 +164,7 @@ export const getMoonRiseTime = (date, lat, lon) => {
         array.push([i, angle]);
     }
 
-    let riseMinute;
+    let riseMinute = 'N/A';
     // Find the rise time when the moon altitude transitions from (-) to (+)
     for (let j=0; j < 1440-1; j++) {
         let angle1 = array[j][1],
@@ -173,6 +173,10 @@ export const getMoonRiseTime = (date, lat, lon) => {
         if (angle1 <= 0 && angle2 >= 0) {
             riseMinute = array[j+1][0];
         }
+    }
+
+    if (typeof riseMinute === 'string') {
+        return riseMinute;
     }
     
     date.setHours(0,riseMinute,0,0);
@@ -189,7 +193,7 @@ export const getMoonSetTime = (date, lat, lon) => {
         array.push([i, angle]);
     }
 
-    let setMinute;
+    let setMinute = 'N/A';
     // Find the set time when the moon altitude transitions from (+) to (-)
     for (let j=0; j < 1440-1; j++) {
         let angle1 = array[j][1],
@@ -198,6 +202,10 @@ export const getMoonSetTime = (date, lat, lon) => {
         if (angle1 >= 0 && angle2 <= 0) {
             setMinute = array[j+1][0];
         }
+    }
+
+    if (typeof setMinute === 'string') {
+        return setMinute;
     }
     
     date.setHours(0,setMinute,0,0);
@@ -208,10 +216,51 @@ const getTimeOfDay = (date) => {
     let hh = date.getHours(),
         mm = date.getMinutes();
 
-    if (hh > 12) {
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+
+    if (hh >= 12) {
         return ((hh-12) + ':' + mm + ' PM');
     } else {
+        // Sets midnight hour
+        if (hh === 0) {
+            hh = 12;
+        }
+
         // Assertion: Time is before 13:00 (1PM)
-        return (hh + ':' + mm + ' PM');
+        return (hh + ':' + mm + ' AM');
     }
 }
+
+
+// Retrieving the moon objects that hold data
+            // const moonIllum = moonAlgorithms.getMoonIllumination(date);
+
+            /*
+            * Moon Fraction - illuminated fraction of the moon;
+            * varies from 0.0 (new moon) to 1.0 (full moon)
+            */
+            // const fraction = moonIllum.fraction;
+
+            /*
+            *  Moon Phase - moon phase; varies from 0.0 to 1.0:
+            *      0	New Moon
+            *          Waxing Crescent
+            *   0.25	First Quarter
+            *          Waxing Gibbous
+            *    0.5	Full Moon
+            *          Waning Gibbous
+            *   0.75	Last Quarter
+            *          Waning Crescent
+            */
+            // const phase = moonIllum.phase;
+
+            /*
+            * Moon Angle - midpoint angle in radians of the 
+            * illuminated limb of the moon reckoned eastward 
+            * from the north point of the disk; the moon is 
+            * waxing if the angle is negative, and waning if 
+            * positive
+            */
+            // const angle = moonIllum.angle

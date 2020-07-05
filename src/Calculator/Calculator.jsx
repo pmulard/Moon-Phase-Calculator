@@ -2,7 +2,6 @@ import React from 'react';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
 import MapAPI from '../MapAPI/MapAPI';
-import Graphic from '../Graphic/Graphic';
 import * as moonAlgorithms from './Algorithms.js';
 
 export default class Calculator extends React.Component {
@@ -11,8 +10,8 @@ export default class Calculator extends React.Component {
 
         this.state = {
             date: new Date(),
-            latitude: '',
-            longitude: '',
+            latitude: 37.7749,
+            longitude: 122.4194,
             location: '',
             riseTime: '',
             setTime: '',
@@ -131,23 +130,16 @@ export default class Calculator extends React.Component {
             dateOBJ = new Date(),
             hh = dateOBJ.getHours(),
             mi = dateOBJ.getMinutes(),
-            ss = dateOBJ.getSeconds(),
-            mm = dateOBJ.getMilliseconds();
+            ss = dateOBJ.getSeconds();
 
         const dateValue = new Date(YY, MM, DD, hh, mi, ss);
         this.setState({date: dateValue});
     }
 
-    calculateMoon = () => {
-        this.setDateState();
+    setMoonDataState = () => {
         var date = this.state.date,
             lat = this.state.latitude,
-            lon = this.state.longitude,
-            location = this.formatLatLon(lat, lon),
-            riseTime = moonAlgorithms.getMoonRiseTime(date, lat, lon),
-            setTime = moonAlgorithms.getMoonSetTime(date, lat, lon),
-            phaseName = 'Sample Name',
-            phasePercent = this.getPhasePercent();
+            lon = this.state.longitude;
         
         this.setState({
             location: this.formatLatLon(lat, lon),
@@ -156,17 +148,19 @@ export default class Calculator extends React.Component {
             phaseName: 'Sample Name',
             phasePercent: this.getPhasePercent()
         })
+    }
 
-        console.log(location, riseTime, setTime, phasePercent);
-
-        this.setGraphic();
+    calculateMoon = () => {
+            this.setDateState();
+            this.setMoonDataState();
+            this.setGraphic();
     };
 
     setGraphic = () => {
         document.getElementById("date-graphic").innerHTML = this.state.date;
         document.getElementById("location-graphic").innerHTML = this.state.location;
         document.getElementById("rise-time-graphic").innerHTML = this.state.riseTime;
-        document.getElementById("set-time-graphic").innerHTML = this.state.setTime;
+        document.getElementById("set-time-graphic").innerHTML = `${this.state.setTime}`;
         document.getElementById("phase-name-graphic").innerHTML = this.state.phaseName;
         document.getElementById("phase-percent-graphic").innerHTML = this.state.phasePercent;
     }

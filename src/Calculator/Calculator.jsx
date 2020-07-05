@@ -40,8 +40,18 @@ export class Calculator extends React.Component {
         });
     }
 
-    clear() {
-        
+    clear = () => {
+        this.setState({
+            date: {},
+            inputDate: {},
+            latitude: {},
+            longitude: {},
+            location: {},
+            riseTime: {},
+            setTime: {},
+            phaseName: {},
+            phasePercent: {},
+        });
     }   
 
     render() {
@@ -155,7 +165,8 @@ export class Calculator extends React.Component {
                             <div class="col-3 col-lg-2">
                                 <button 
                                     type="button" 
-                                    class="execute-button btn btn-danger btn-lg btn-block">
+                                    class="execute-button btn btn-danger btn-lg btn-block"
+                                    onClick={this.clear}>
                                 Clear</button>
                             </div>
                             <div class="col-auto">

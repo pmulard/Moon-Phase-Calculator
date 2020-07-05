@@ -220,7 +220,7 @@ const getTimeOfDay = (date) => {
         mm = '0' + mm;
     }
 
-    if (hh >= 12) {
+    if (hh > 12) {
         return ((hh-12) + ':' + mm + ' PM');
     } else {
         // Sets midnight hour

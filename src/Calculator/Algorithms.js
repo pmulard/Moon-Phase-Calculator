@@ -176,7 +176,7 @@ export const getMoonRiseTime = (date, lat, lon) => {
     }
     
     date.setHours(0,riseMinute,0,0);
-    return date;
+    return getTimeOfDay(date);
 }
 
 export const getMoonSetTime = (date, lat, lon) => {
@@ -200,6 +200,18 @@ export const getMoonSetTime = (date, lat, lon) => {
         }
     }
     
-    date.setHours(0,setMinute,0,0)
-    return date;
+    date.setHours(0,setMinute,0,0);
+    return getTimeOfDay(date);
+}
+
+const getTimeOfDay = (date) => {
+    let hh = date.getHours(),
+        mm = date.getMinutes();
+
+    if (hh > 12) {
+        return ((hh-12) + ':' + mm + ' PM');
+    } else {
+        // Assertion: Time is before 13:00 (1PM)
+        return (hh + ':' + mm + ' PM');
+    }
 }

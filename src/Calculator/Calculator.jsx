@@ -1,6 +1,8 @@
 import React from 'react';
+import $ from 'jquery';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
+import Collapse from 'react-bootstrap/Button';
 import { GoogleApiWrapper, InfoWindow, Marker  } from 'google-maps-react';
 import * as moonAlgorithms from './Algorithms.js';
 import CurrentLocation from '../MapAPI/MapAPI';
@@ -21,7 +23,7 @@ export class Calculator extends React.Component {
             phasePercent: {},
             showingInfoWindow: false,
             activeMarker: {},
-            selectedPlace: {}
+            selectedPlace: {},
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -30,18 +32,12 @@ export class Calculator extends React.Component {
     // When app loads for the first time
     componentDidMount() {
         // Sets lat/lon state (and as a result, input fields) to current position
-        // Copied from: https://stackoverflow.com/questions/55829230/want-to-get-current-location-from-react-native-jsgoogle-api-key
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.setState({
-                latitude: this.round(position.coords.latitude, 5),
-                longitude: this.round(position.coords.longitude, 5),
-                error: null,
-              });
-            },
-            (error) => this.setState({ error: error.message }),
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 },
-        );
+        this.setLatLonState();
+
+        // Sets current date in dateInput state (and as a result, date picker)
+        this.setState({
+            inputDate: this.getInputDate(new Date())
+        });
     }
 
     clear() {
@@ -77,28 +73,58 @@ export class Calculator extends React.Component {
                         <div className="date-container" class="form-group row">
                             <label htmlFor="date-input" class="col-1 col-lg-2 col-form-label"></label>
                             <div class="col-5 col-lg-4">
-                                <input class="form-control" type="date" id="date-input" placeholder="" name="inputDate" value={this.state.inputDate} onChange={this.handleChange}/>
+                                <input class="form-control" 
+                                    type="date" id="date-input" 
+                                    placeholder="" 
+                                    name="inputDate" 
+                                    value={this.state.inputDate} 
+                                    onChange={this.handleChange}
+                                />
                             </div>
                         </div>
-                        <div className="location-input-container" class="form-group row">
+                        <div className="location-input-container" class="form-group row" id="location-fields">
                             <label class="col-1 col-lg-2 col-form-label"></label>
                             <div class="col-5 col-lg-4">
-                                <input class="form-control" type="number" placeholder="Latitude" id="location-input-latitude" name="latitude" value={this.state.latitude} onChange={this.handleChange}/>
+                                <input class="form-control" 
+                                    type="number" 
+                                    placeholder="Latitude" 
+                                    id="location-input-latitude" 
+                                    name="latitude" 
+                                    value={this.state.latitude} 
+                                    onChange={this.handleChange}
+                                />
                             </div>
                             <div class="col-5 col-lg-4">
-                                <input class="form-control" type="number" placeholder="Longitude" id="location-input-longitude" name="longitude" value={this.state.longitude} onChange={this.handleChange}/>
+                                <input 
+                                    class="form-control" 
+                                    type="number" 
+                                    placeholder="Longitude" 
+                                    id="location-input-longitude" 
+                                    name="longitude" 
+                                    value={this.state.longitude} 
+                                    onChange={this.handleChange}
+                                />
                             </div>
                         </div>
                         <div className="location-button-container" class="form-group row">
                             <div class="col-1 col-lg-2"></div>
                             <div class="col-5 col-lg-4 d-flex justify-content-start">
-                                <Button class="location-button">My Location</Button>
+                                <Button 
+                                    class="location-button" 
+                                    onClick={this.setLatLonState}
+                                >My Location</Button>
                             </div>
                             <div class="col-5 col-lg-4 d-flex justify-content-start " data-toggle="collapse" data-target="#map-api" aria-expanded="false" aria-controls="">
-                                <Button class="location-button">Maps</Button>
+                                <Button 
+                                    class="maps-button" 
+                                    data-toggle="collapse" 
+                                    data-target="#google-maps-container" 
+                                    aria-expanded="true" 
+                                    aria-controls="#google-maps-container"
+                                >Maps</Button>
                             </div>
                         </div>
-                        <div className="google-maps-container" class="google-maps-container form-group row" id="google-maps-container">
+                        <div className="google-maps-container" class="form-group row" id="google-maps-container">
                             <div class="col-1 col-lg-2"></div>
                             <div class=" col-7 map-api">
                                 <CurrentLocation centerAroundCurrentLocation google={this.props.google}>
@@ -107,7 +133,7 @@ export class Calculator extends React.Component {
                                         marker={this.state.activeMarker}
                                         visible={this.state.showingInfoWindow}
                                         onClose={this.onClose}
-                                        >
+                                    >
                                         <div>
                                             <h4>{this.state.selectedPlace.name}</h4>
                                         </div>
@@ -120,10 +146,17 @@ export class Calculator extends React.Component {
                             <div class="col-1 col-lg-2">
                             </div>
                             <div class="col-7 col-lg-6">
-                                <button type="button" class="execute-button btn btn-primary btn-lg btn-block" onClick={this.calculateMoon}>Generate</button>
+                                <button 
+                                    type="button" 
+                                    class="execute-button btn btn-primary btn-lg btn-block" 
+                                    onClick={this.calculateMoon}>
+                                Generate</button>
                             </div>
                             <div class="col-3 col-lg-2">
-                                <button type="button" class="execute-button btn btn-danger btn-lg btn-block">Clear</button>
+                                <button 
+                                    type="button" 
+                                    class="execute-button btn btn-danger btn-lg btn-block">
+                                Clear</button>
                             </div>
                             <div class="col-auto">
                             </div>
@@ -139,6 +172,21 @@ export class Calculator extends React.Component {
     handleChange (e) {
         e.preventDefault();
         this.setState({ [e.target.name]: e.target.value });
+    };
+
+    setLatLonState = () => {
+        // Copied from: https://stackoverflow.com/questions/55829230/want-to-get-current-location-from-react-native-jsgoogle-api-key
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+              this.setState({
+                latitude: this.round(position.coords.latitude, 5),
+                longitude: this.round(position.coords.longitude, 5),
+                error: null,
+              });
+            },
+            (error) => this.setState({ error: error.message }),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 },
+        )
     };
 
 
@@ -239,6 +287,22 @@ export class Calculator extends React.Component {
 
         return latitude + ', ' + longitude;
     };
+
+    getInputDate = (date) => {
+        let yy = date.getFullYear(),
+            mm = date.getMonth()+1,
+            dd = date.getDate();
+        
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        return (yy + '-' + mm + '-' + dd);
+    }
 
 
     /*

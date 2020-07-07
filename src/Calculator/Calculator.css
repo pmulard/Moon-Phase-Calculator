@@ -3,6 +3,7 @@
 * {
     background-color: #313B40;
     color: white;
+    overflow-x: hidden;
 }
 
 .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
@@ -21,6 +22,14 @@
     #date-location-container div {
         font-size: 14px;
     }
+
+        #date-graphic {
+            text-align: left;
+        }
+
+        #location-graphic {
+            text-align: right;
+        }
 
     #rise-set-time-container {
         min-height: 200px;

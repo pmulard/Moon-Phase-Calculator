@@ -48,8 +48,10 @@ export class Calculator extends React.Component {
                     <div class="graphic-container">
                         <div className="app-container" class="justify-content-center d-flex flex-column">
                             <div className="date-location-container" class="row justify-content-between" id="date-location-container">
-                                <div class="graphic-element col-5 col-lg-6" id="date-graphic">&nbsp;</div>
-                                <div class="graphic-element col-5 col-lg-6" id="location-graphic">&nbsp;</div>
+                                <div class="col-2"></div>
+                                <div class="graphic-element col-4" id="date-graphic">&nbsp;</div>
+                                <div class="graphic-element col-4" id="location-graphic">&nbsp;</div>
+                                <div class="col-2"></div>
                             </div>
                             <div className="rise-set-time-container" class="row justify-content-center" id="rise-set-time-container">
                                 <div class="graphic-element col-4" id="rise-time-graphic">&nbsp;</div>

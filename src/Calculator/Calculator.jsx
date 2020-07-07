@@ -2,7 +2,6 @@ import React from 'react';
 import $ from 'jquery';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
-import Collapse from 'react-bootstrap/Button';
 import { GoogleApiWrapper, InfoWindow, Marker  } from 'google-maps-react';
 import * as moonAlgorithms from './Algorithms.js';
 import CurrentLocation from '../MapAPI/MapAPI';
@@ -61,14 +60,14 @@ export class Calculator extends React.Component {
                     <div class="graphic-container">
                         <div className="app-container" class="justify-content-center d-flex flex-column">
                             <div className="date-location-container" class="row justify-content-between">
-                                <div class="graphic-element col-6" id="date-graphic">&nbsp;</div>
-                                <div class="graphic-element col-6" id="location-graphic">&nbsp;</div>
+                                <div class="graphic-element col-5 col-lg-6" id="date-graphic">&nbsp;</div>
+                                <div class="graphic-element col-5 col-lg-6" id="location-graphic">&nbsp;</div>
                             </div>
-                            <div className="rise-set-time-container" class="row">
+                            <div className="rise-set-time-container" class="row justify-content-center" id="rise-set-time-container">
                                 <div class="graphic-element col-4" id="rise-time-graphic">&nbsp;</div>
-                                    <div className="graphic-container" class="col-4">
-                                        <img src="" alt="" id="moon-img-graphic"/>
-                                    </div>
+                                <div className="graphic-container graphic-element" class="col-4 col-lg-3">
+                                    <img src="" alt="" id="moon-img-graphic"/>
+                                </div>
                                 <div class="graphic-element col-4" id="set-time-graphic">&nbsp;</div>
                             </div>
                             <div className="phase-properties-container" class="row justify-content-center">
@@ -137,7 +136,7 @@ export class Calculator extends React.Component {
                         <div className="google-maps-container" class="form-group row" id="google-maps-container">
                             <div class="col-1 col-lg-2"></div>
                             <div class=" col-7 map-api">
-                                <CurrentLocation centerAroundCurrentLocation google={this.props.google}>
+                                {/* <CurrentLocation centerAroundCurrentLocation google={this.props.google}>
                                     <Marker onClick={this.onMarkerClick} name={'current location'}/>
                                     <InfoWindow
                                         marker={this.state.activeMarker}
@@ -148,7 +147,7 @@ export class Calculator extends React.Component {
                                             <h4>{this.state.selectedPlace.name}</h4>
                                         </div>
                                     </InfoWindow>
-                                </CurrentLocation>
+                                </CurrentLocation> */}
                             </div>
                             <div class="col-1 col-lg-auto"></div>
                         </div>
@@ -200,11 +199,6 @@ export class Calculator extends React.Component {
         )
     };
 
-
-    /*
-     * MOON CALCULATION FUNCTIONS
-    */
-
     async setDateState () {
         const inputDate = this.state.inputDate;
         let YY = parseInt(inputDate.substring(0,4)),
@@ -221,6 +215,11 @@ export class Calculator extends React.Component {
         this.setGraphic();
     }
 
+
+    /*
+     * MOON CALCULATION FUNCTIONS
+    */    
+
     setMoonDataState () {
         var date = this.state.date,
             lat = this.state.latitude,
@@ -232,7 +231,7 @@ export class Calculator extends React.Component {
             location: this.formatLatLon(lat, lon),
             riseTime: riseTimeVal.slice(0,1) + " " + riseTimeVal.slice(1),
             setTime: setTimeVal.slice(0,1) + " " + setTimeVal.slice(1),
-            phaseName: 'Sample Name',
+            phaseName: this.getPhaseName(),
             phasePercent: this.getPhasePercent()
         }, this.setGraphic());
     }
@@ -251,10 +250,30 @@ export class Calculator extends React.Component {
     }
 
     getPhaseName = () => {
-        const date = this.state.date;
-        const moonIllum = moonAlgorithms.getMoonIllumination(date);
+        const moonIllum = moonAlgorithms.getMoonIllumination(this.state.date);
         const phase = moonIllum.phase;
-        // if (phase >= 0 && phase )
+        if ((phase >= 0 && phase < 0.01) || phase >= 0.99) {
+            return 'New';
+        } else if (phase >= 0.01 && phase < 0.10) {
+            return 'Young';
+        } else if (phase >= 0.10 && phase < 0.24) {
+            return 'Waxing Crescent';
+        } else if (phase >= 0.24 && phase < 0.26) {
+            return 'First Quarter';
+        } else if (phase >= 0.26 && phase < 0.49) {
+            return 'Waxing Gibbous';
+        } else if (phase >= 0.49 && phase < 0.51) {
+            return 'Full';
+        } else if (phase >= 0.51 && phase < 0.74) {
+            return 'Waning Gibbous';
+        } else if (phase >= 0.74 && phase < 0.76) {
+            return 'Last Quarter';
+        } else if (phase >= 0.76 && phase < 0.90) {
+            return 'Waning Crescent';
+        } else {
+            //Assertion: phase >= 0.90 && phase < 0.99
+            return 'Old';
+        }
     };
 
     getPhasePercent = () => {

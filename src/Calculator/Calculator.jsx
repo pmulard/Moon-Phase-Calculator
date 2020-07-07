@@ -23,6 +23,8 @@ export class Calculator extends React.Component {
             showingInfoWindow: false,
             activeMarker: {},
             selectedPlace: {},
+            leftGraphicSlot: {},
+            rightGraphicSlot: {}
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -37,29 +39,15 @@ export class Calculator extends React.Component {
         this.setState({
             inputDate: this.getInputDate(new Date())
         });
-    }
-
-    clear = () => {
-        this.setState({
-            date: {},
-            inputDate: {},
-            latitude: {},
-            longitude: {},
-            location: {},
-            riseTime: {},
-            setTime: {},
-            phaseName: {},
-            phasePercent: {},
-        });
-    }   
+    }  
 
     render() {
         return (
-            <div className="app-container" class="app-container-fluid row justify-content-center">
+            <div className="app-container" class="app-container-fluid row justify-content-center" id="app-container">
                 <div className="block-container" class="col-sm-12 col-md-11 col-lg-10 d-flex justify-content-center d-flex flex-column">
                     <div class="graphic-container">
                         <div className="app-container" class="justify-content-center d-flex flex-column">
-                            <div className="date-location-container" class="row justify-content-between">
+                            <div className="date-location-container" class="row justify-content-between" id="date-location-container">
                                 <div class="graphic-element col-5 col-lg-6" id="date-graphic">&nbsp;</div>
                                 <div class="graphic-element col-5 col-lg-6" id="location-graphic">&nbsp;</div>
                             </div>
@@ -178,7 +166,10 @@ export class Calculator extends React.Component {
     }
     
 
-    // Handles state changes for local objects
+    /*
+     * STATE HANDLING FUNCTIONS
+    */ 
+    
     handleChange (e) {
         e.preventDefault();
         this.setState({ [e.target.name]: e.target.value });
@@ -215,6 +206,22 @@ export class Calculator extends React.Component {
         this.setGraphic();
     }
 
+    clear = () => {
+        this.setState({
+            date: {},
+            inputDate: {},
+            latitude: {},
+            longitude: {},
+            location: {},
+            riseTime: {},
+            setTime: {},
+            phaseName: {},
+            phasePercent: {},
+            leftGraphicSlot: {},
+            rightGraphicSlot: {}
+        });
+    } 
+
 
     /*
      * MOON CALCULATION FUNCTIONS
@@ -224,15 +231,23 @@ export class Calculator extends React.Component {
         var date = this.state.date,
             lat = this.state.latitude,
             lon = this.state.longitude,
-            riseTimeVal = '⭜' + moonAlgorithms.getMoonRiseTime(date, lat, lon),
-            setTimeVal = '⭝' + moonAlgorithms.getMoonSetTime(date, lat, lon)
+            riseTimeVal = moonAlgorithms.getMoonRiseTime(date, lat, lon),
+            setTimeVal = moonAlgorithms.getMoonSetTime(date, lat, lon),
+            riseTimeOBJ = moonAlgorithms.getMoonTimes(date, lat, lon).rise,
+            setTimeOBJ = moonAlgorithms.getMoonTimes(date, lat, lon).set,
+            riseTimeText = '⭜ ' + riseTimeVal,
+            setTimeText = '⭝ ' + setTimeVal;
+        
+        const times = this.compareRiseSetTimes(riseTimeOBJ, setTimeOBJ, riseTimeText, setTimeText);
         
         this.setState({
             location: this.formatLatLon(lat, lon),
-            riseTime: riseTimeVal.slice(0,1) + " " + riseTimeVal.slice(1),
-            setTime: setTimeVal.slice(0,1) + " " + setTimeVal.slice(1),
+            riseTime: riseTimeText.slice(0,1) + " ." + riseTimeText.slice(1),
+            setTime: setTimeText.slice(0,1) + " ." + setTimeText.slice(1),
             phaseName: this.getPhaseName(),
-            phasePercent: this.getPhasePercent()
+            phasePercent: this.getPhasePercent(),
+            leftGraphicSlot: times.firstEvent,
+            rightGraphicSlot: times.secondEvent
         }, this.setGraphic());
     }
 
@@ -243,10 +258,24 @@ export class Calculator extends React.Component {
     setGraphic = () => {
         document.getElementById("date-graphic").innerHTML = this.state.date.toString().slice(0,15);
         document.getElementById("location-graphic").innerHTML = this.state.location;
-        document.getElementById("rise-time-graphic").innerHTML = this.state.riseTime;
-        document.getElementById("set-time-graphic").innerHTML = this.state.setTime;
+        document.getElementById("rise-time-graphic").innerHTML = this.state.leftGraphicSlot;
+        document.getElementById("set-time-graphic").innerHTML = this.state.rightGraphicSlot;
         document.getElementById("phase-name-graphic").innerHTML = this.state.phaseName;
         document.getElementById("phase-percent-graphic").innerHTML = this.state.phasePercent;
+    }
+
+    compareRiseSetTimes = (rise, set, riseText, setText) => {
+        if (rise > set) {
+            return {
+                firstEvent: setText,
+                secondEvent: riseText
+            }
+        } else {
+            return {
+                firstEvent: riseText,
+                secondEvent: setText
+            }
+        }
     }
 
     getPhaseName = () => {

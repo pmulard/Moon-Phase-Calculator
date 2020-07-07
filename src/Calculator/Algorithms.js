@@ -12,7 +12,8 @@ var PI = Math.PI,
     tan = Math.tan,
     asin = Math.asin,
     acos = Math.acos,
-    atan = Math.atan;
+    atan = Math.atan,
+    dayMs = 1000 * 60 * 60 * 24;
 
 /* 
   Julian dates are the standard for mathematical operations in astrology.
@@ -149,67 +150,87 @@ const sunCoords = (d) => {
 
 
 /*
-   MOON Rise and Set Times - algorithms created by Peter Mulard
-   Formulas based on a table based method explained here: 
-   http://www.stargazing.net/kepler/moonrise.html
+  MOON Rise and Set Times
 */
 
 export const getMoonRiseTime = (date, lat, lon) => {
-    const array = [];
-        
-    // Create table to hold angles with corresponding minute of the day
-    for (let i=0; i < 1440; i++) {
-        date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
-        const angle = getMoonPosition(date, lat, lon).altitude;
-        array.push([i, angle]);
-    }
+    const moon = getMoonTimes(date, lat, lon);
+    console.log('rise: ' + moon.rise)
 
-    let riseMinute = 'N/A';
-    // Find the rise time when the moon altitude transitions from (-) to (+)
-    for (let j=0; j < 1440-1; j++) {
-        let angle1 = array[j][1],
-            angle2 = array[j+1][1];
-        
-        if (angle1 <= 0 && angle2 >= 0) {
-            riseMinute = array[j+1][0];
-        }
-    }
-
-    if (typeof riseMinute === 'string') {
-        return riseMinute;
+    if (moon.alwaysUp || moon.alwaysDown) {
+        return 'No rise'
     }
     
-    date.setHours(0,riseMinute,0,0);
-    return getTimeOfDay(date);
+    return getTimeOfDay(moon.rise);
 }
 
 export const getMoonSetTime = (date, lat, lon) => {
-    const array = [];
-        
-    // Create table to hold angles with corresponding minute of the day
-    for (let i=0; i < 1440; i++) {
-        date.setHours(0,i,0,0); // Starts at 12 AM. i represents 1 minute
-        const angle = getMoonPosition(date, lat, lon).altitude;
-        array.push([i, angle]);
-    }
+    const moon = getMoonTimes(date, lat, lon);
+    console.log('set: ' + moon.set)
 
-    let setMinute = 'N/A';
-    // Find the set time when the moon altitude transitions from (+) to (-)
-    for (let j=0; j < 1440-1; j++) {
-        let angle1 = array[j][1],
-            angle2 = array[j+1][1];
-        
-        if (angle1 >= 0 && angle2 <= 0) {
-            setMinute = array[j+1][0];
-        }
-    }
-
-    if (typeof setMinute === 'string') {
-        return setMinute;
+    if (moon.alwaysUp || moon.alwaysDown) {
+        return 'No set'
     }
     
-    date.setHours(0,setMinute,0,0);
-    return getTimeOfDay(date);
+    return getTimeOfDay(moon.set);
+}
+
+export const getMoonTimes = (date, lat, lng, inUTC) => {
+    var t = new Date(date);
+    if (inUTC) t.setUTCHours(0, 0, 0, 0);
+    else t.setHours(0, 0, 0, 0);
+
+    var hc = 0.133 * rad,
+        h0 = getMoonPosition(t, lat, lng).altitude - hc,
+        h1, h2, rise, set, a, b, xe, ye, d, roots, x1, x2, dx;
+
+    // go in 2-hour chunks, each time seeing if a 3-point quadratic curve crosses zero (which means rise or set)
+    for (var i = 1; i <= 24; i += 2) {
+        h1 = getMoonPosition(hoursLater(t, i), lat, lng).altitude - hc;
+        h2 = getMoonPosition(hoursLater(t, i + 1), lat, lng).altitude - hc;
+
+        a = (h0 + h2) / 2 - h1;
+        b = (h2 - h0) / 2;
+        xe = -b / (2 * a);
+        ye = (a * xe + b) * xe + h1;
+        d = b * b - 4 * a * h1;
+        roots = 0;
+
+        if (d >= 0) {
+            dx = Math.sqrt(d) / (Math.abs(a) * 2);
+            x1 = xe - dx;
+            x2 = xe + dx;
+            if (Math.abs(x1) <= 1) roots++;
+            if (Math.abs(x2) <= 1) roots++;
+            if (x1 < -1) x1 = x2;
+        }
+
+        if (roots === 1) {
+            if (h0 < 0) rise = i + x1;
+            else set = i + x1;
+
+        } else if (roots === 2) {
+            rise = i + (ye < 0 ? x2 : x1);
+            set = i + (ye < 0 ? x1 : x2);
+        }
+
+        if (rise && set) break;
+
+        h0 = h2;
+    }
+
+    var result = {};
+
+    if (rise) result.rise = hoursLater(t, rise);
+    if (set) result.set = hoursLater(t, set);
+
+    if (!rise && !set) result[ye > 0 ? 'alwaysUp' : 'alwaysDown'] = true;
+
+    return result;
+};
+
+const hoursLater = (date, h) => {
+    return new Date(date.valueOf() + h * dayMs / 24);
 }
 
 const getTimeOfDay = (date) => {
@@ -232,6 +253,8 @@ const getTimeOfDay = (date) => {
         return (hh + ':' + mm + ' AM');
     }
 }
+
+
 
 
 // Retrieving the moon objects that hold data

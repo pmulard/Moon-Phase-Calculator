@@ -1,6 +1,51 @@
-#location-button {
-    color: red;
+
+
+* {
+    background-color: #313B40;
+    color: white;
 }
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #313B40 !important;
+}
+
+.btn-danger, .btn-danger:hover, .btn-danger:active, .btn-danger:visited {
+    background-color: #313B40 !important;
+}
+
+.graphic-container {
+    margin-top: 5px;
+    margin-bottom: 50px;
+}
+
+    #date-location-container div {
+        font-size: 14px;
+    }
+
+    #rise-set-time-container {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+        #rise-time-graphic {
+            font-size: 25px;
+            text-align: right;
+        }
+        
+        #set-time-graphic {
+            font-size: 25px;
+            text-align: left;
+        }
+
+        #phase-name-graphic {
+            font-size: 18px;
+        }
+
+        #phase-percent-graphic {
+            font-size: 15px;
+        }
 
 .google-maps-container {
     min-height: 350px;
@@ -10,9 +55,7 @@
     text-align: right;
 }
 
-.graphic-element {
-    
-}
+
 
 /* For Debugging */
 /* * {
@@ -20,3 +63,4 @@
     color: #0f0 !important;
     outline: solid #f00 1px !important;
   } */
+

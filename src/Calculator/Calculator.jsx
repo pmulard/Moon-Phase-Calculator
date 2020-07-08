@@ -3,9 +3,11 @@ import $ from 'jquery';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
 import { GoogleApiWrapper, InfoWindow, Marker  } from 'google-maps-react';
-import * as moonAlgorithms from './Algorithms.js';
 import CurrentLocation from '../MapAPI/MapAPI';
+import * as moonAlgorithms from './Algorithms.js';
 
+
+// Images for Moon Graphic
 import New from '../moonShapes/New.png';
 import Young from '../moonShapes/Young.png';
 import WaxingCrescent from '../moonShapes/WaxingCrescent.png';
@@ -32,7 +34,7 @@ export class Calculator extends React.Component {
             phaseName: {},
             phasePercent: {},
             moonImage: {},
-            showingInfoWindow: false,
+            showingInfoWindow: true,
             activeMarker: {},
             selectedPlace: {},
             leftGraphicSlot: {},
@@ -125,20 +127,20 @@ export class Calculator extends React.Component {
                                     onClick={this.setLatLonState}
                                 >My Location</Button>
                             </div>
-                            <div class="col-5 col-lg-4 d-flex justify-content-start " data-toggle="collapse" data-target="#map-api" aria-expanded="false" aria-controls="">
-                                <Button 
+                            <div class="col-5 col-lg-4 d-flex justify-content-start " data-toggle="collapse" data-target="#google-maps-container" aria-expanded="false" aria-controls="">
+                                {/* <Button 
                                     class="maps-button" 
                                     data-toggle="collapse" 
                                     data-target="#google-maps-container" 
                                     aria-expanded="true" 
                                     aria-controls="#google-maps-container"
-                                >Maps</Button>
+                                >Maps</Button> */}
                             </div>
                         </div>
-                        <div className="google-maps-container" class="form-group row" id="google-maps-container">
+                        <div className="google-maps-container" class="form-group row " id="google-maps-container">
                             <div class="col-1 col-lg-2"></div>
-                            <div class=" col-7 map-api">
-                                {/* <CurrentLocation centerAroundCurrentLocation google={this.props.google}>
+                            <div class=" col-7 map-api ">
+                                <CurrentLocation centerAroundCurrentLocation google={this.props.google}>
                                     <Marker onClick={this.onMarkerClick} name={'current location'}/>
                                     <InfoWindow
                                         marker={this.state.activeMarker}
@@ -149,7 +151,7 @@ export class Calculator extends React.Component {
                                             <h4>{this.state.selectedPlace.name}</h4>
                                         </div>
                                     </InfoWindow>
-                                </CurrentLocation> */}
+                                </CurrentLocation>
                             </div>
                             <div class="col-1 col-lg-auto"></div>
                         </div>
@@ -343,7 +345,7 @@ export class Calculator extends React.Component {
         } else if (phase >= 0.76 && phase < 0.90) {
             return 'Waning Crescent';
         } else {
-            //Assertion: phase >= 0.90 && phase < 0.99
+            //Assertion: phase >= 0.90 && phase < 0
             return 'Old';
         }
     };

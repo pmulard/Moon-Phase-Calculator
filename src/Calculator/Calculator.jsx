@@ -36,7 +36,7 @@ export class Calculator extends React.Component {
             activeMarker: {},
             selectedPlace: {},
             leftGraphicSlot: {},
-            rightGraphicSlot: {}
+            rightGraphicSlot: {},
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -68,7 +68,7 @@ export class Calculator extends React.Component {
                             <div className="rise-set-time-container" class="row justify-content-center align-items-end" id="rise-set-time-container">
                                 <div class="graphic-element col-4" id="rise-time-graphic">&nbsp;</div>
                                 <div className="graphic-container graphic-element" class="col-4 col-lg-3">
-                                    <img src="../../public/moonShapes/Full.png" alt="" id="moon-image"/>
+                                    <img src="" alt="" id="moon-image"/>
                                 </div>
                                 <div class="graphic-element col-4" id="set-time-graphic">&nbsp;</div>
                             </div>
@@ -264,7 +264,7 @@ export class Calculator extends React.Component {
             moonImage: this.getPhaseName().replace(/\s+/g, ''),
             leftGraphicSlot: times.firstEvent,
             rightGraphicSlot: times.secondEvent
-        }, this.setGraphic());
+        });
     }
 
     calculateMoon = () => {
@@ -278,8 +278,33 @@ export class Calculator extends React.Component {
         document.getElementById("set-time-graphic").innerHTML = this.state.rightGraphicSlot;
         document.getElementById("phase-name-graphic").innerHTML = this.state.phaseName;
         document.getElementById("phase-percent-graphic").innerHTML = this.state.phasePercent;
-        document.getElementById("moon-image").src = Full;
-        document.getElementById("moon-image").alt = `${this.state.moonImage}`;
+        document.getElementById("moon-image").src = this.getImageSource(this.state.moonImage);
+        document.getElementById("moon-image").alt = this.state.moonImage;
+    }
+
+    getImageSource = (moonImage) => {
+        if (moonImage === 'New') {
+            return New;
+        } else if (moonImage === 'Young') {
+            return Young;
+        } else if (moonImage === 'WaxingCrescent') {
+            return WaxingCrescent;
+        } else if (moonImage === 'WaxingQuarter') {
+            return WaxingQuarter;
+        } else if (moonImage === 'WaxingGibbous') {
+            return WaxingGibbous;
+        } else if (moonImage === 'Full') {
+            return Full;
+        } else if (moonImage === 'WaningGibbous') {
+            return WaningGibbous;
+        } else if (moonImage === 'WaningQuarter') {
+            return WaningQuarter;
+        } else if (moonImage === 'WaningCrescent') {
+            return WaningCrescent;
+        } else {
+            //Assertion: moonImage === 'Old'
+            return Old;
+        }
     }
 
     compareRiseSetTimes = (rise, set, riseText, setText) => {
@@ -306,7 +331,7 @@ export class Calculator extends React.Component {
         } else if (phase >= 0.10 && phase < 0.24) {
             return 'Waxing Crescent';
         } else if (phase >= 0.24 && phase < 0.26) {
-            return 'First Quarter';
+            return 'Waxing Quarter';
         } else if (phase >= 0.26 && phase < 0.49) {
             return 'Waxing Gibbous';
         } else if (phase >= 0.49 && phase < 0.51) {

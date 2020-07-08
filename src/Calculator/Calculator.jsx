@@ -6,6 +6,17 @@ import { GoogleApiWrapper, InfoWindow, Marker  } from 'google-maps-react';
 import * as moonAlgorithms from './Algorithms.js';
 import CurrentLocation from '../MapAPI/MapAPI';
 
+import New from '../moonShapes/New.png';
+import Young from '../moonShapes/Young.png';
+import WaxingCrescent from '../moonShapes/WaxingCrescent.png';
+import WaxingQuarter from '../moonShapes/WaxingQuarter.png';
+import WaxingGibbous from '../moonShapes/WaxingGibbous.png';
+import Full from '../moonShapes/Full.png';
+import WaningGibbous from '../moonShapes/WaningGibbous.png';
+import WaningQuarter from '../moonShapes/WaningQuarter.png';
+import WaningCrescent from '../moonShapes/WaningCrescent.png';
+import Old from '../moonShapes/Old.png';
+
 export class Calculator extends React.Component {
     constructor(props) {
         super(props)
@@ -20,6 +31,7 @@ export class Calculator extends React.Component {
             setTime: {},
             phaseName: {},
             phasePercent: {},
+            moonImage: {},
             showingInfoWindow: false,
             activeMarker: {},
             selectedPlace: {},
@@ -48,15 +60,15 @@ export class Calculator extends React.Component {
                     <div class="graphic-container">
                         <div className="app-container" class="justify-content-center d-flex flex-column">
                             <div className="date-location-container" class="row justify-content-between" id="date-location-container">
-                                <div class="col-2"></div>
-                                <div class="graphic-element col-4" id="date-graphic">&nbsp;</div>
-                                <div class="graphic-element col-4" id="location-graphic">&nbsp;</div>
-                                <div class="col-2"></div>
+                                <div class="col-1 col-lg-2"></div>
+                                <div class="graphic-element col-5 col-lg-4" id="date-graphic">&nbsp;</div>
+                                <div class="graphic-element col-5 col-lg-4" id="location-graphic">&nbsp;</div>
+                                <div class="col-1 col-lg-2"></div>
                             </div>
-                            <div className="rise-set-time-container" class="row justify-content-center" id="rise-set-time-container">
+                            <div className="rise-set-time-container" class="row justify-content-center align-items-end" id="rise-set-time-container">
                                 <div class="graphic-element col-4" id="rise-time-graphic">&nbsp;</div>
                                 <div className="graphic-container graphic-element" class="col-4 col-lg-3">
-                                    <img src="" alt="" id="moon-img-graphic"/>
+                                    <img src="../../public/moonShapes/Full.png" alt="" id="moon-image"/>
                                 </div>
                                 <div class="graphic-element col-4" id="set-time-graphic">&nbsp;</div>
                             </div>
@@ -219,6 +231,7 @@ export class Calculator extends React.Component {
             setTime: {},
             phaseName: {},
             phasePercent: {},
+            moonImage: {},
             leftGraphicSlot: {},
             rightGraphicSlot: {}
         });
@@ -248,6 +261,7 @@ export class Calculator extends React.Component {
             setTime: setTimeText.slice(0,1) + " ." + setTimeText.slice(1),
             phaseName: this.getPhaseName(),
             phasePercent: this.getPhasePercent(),
+            moonImage: this.getPhaseName().replace(/\s+/g, ''),
             leftGraphicSlot: times.firstEvent,
             rightGraphicSlot: times.secondEvent
         }, this.setGraphic());
@@ -264,6 +278,8 @@ export class Calculator extends React.Component {
         document.getElementById("set-time-graphic").innerHTML = this.state.rightGraphicSlot;
         document.getElementById("phase-name-graphic").innerHTML = this.state.phaseName;
         document.getElementById("phase-percent-graphic").innerHTML = this.state.phasePercent;
+        document.getElementById("moon-image").src = Full;
+        document.getElementById("moon-image").alt = `${this.state.moonImage}`;
     }
 
     compareRiseSetTimes = (rise, set, riseText, setText) => {
@@ -298,7 +314,7 @@ export class Calculator extends React.Component {
         } else if (phase >= 0.51 && phase < 0.74) {
             return 'Waning Gibbous';
         } else if (phase >= 0.74 && phase < 0.76) {
-            return 'Last Quarter';
+            return 'Waning Quarter';
         } else if (phase >= 0.76 && phase < 0.90) {
             return 'Waning Crescent';
         } else {

@@ -3,7 +3,7 @@
 * {
     background-color: #313B40;
     color: white;
-    overflow-x: hidden;
+    
 }
 
 .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
@@ -12,6 +12,10 @@
 
 .btn-danger, .btn-danger:hover, .btn-danger:active, .btn-danger:visited {
     background-color: #313B40 !important;
+}
+
+#app-container {
+    width: 100%;
 }
 
 .graphic-container {
@@ -32,10 +36,11 @@
         }
 
     #rise-set-time-container {
-        min-height: 200px;
+        min-height: 150px;
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        margin-bottom: 15px;
     }
     
         #rise-time-graphic {
@@ -48,8 +53,13 @@
             text-align: left;
         }
 
+        #moon-image {
+            width: 100px;
+            height: 100px;
+        }
+
         #phase-name-graphic {
-            font-size: 18px;
+            font-size: 17px;
         }
 
         #phase-percent-graphic {
@@ -67,9 +77,9 @@
 
 
 /* For Debugging */
-/* * {
-    background: #000 !important;
+* {
+    /* background: #000 !important;
     color: #0f0 !important;
-    outline: solid #f00 1px !important;
-  } */
+    outline: solid #f00 1px !important; */
+  }
 

@@ -155,7 +155,6 @@ const sunCoords = (d) => {
 
 export const getMoonRiseTime = (date, lat, lon) => {
     const moon = getMoonTimes(date, lat, lon);
-    console.log('rise: ' + moon.rise)
 
     if (moon.alwaysUp || moon.alwaysDown) {
         return 'No rise'
@@ -166,7 +165,6 @@ export const getMoonRiseTime = (date, lat, lon) => {
 
 export const getMoonSetTime = (date, lat, lon) => {
     const moon = getMoonTimes(date, lat, lon);
-    console.log('set: ' + moon.set)
 
     if (moon.alwaysUp || moon.alwaysDown) {
         return 'No set'

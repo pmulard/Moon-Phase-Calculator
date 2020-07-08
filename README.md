@@ -1,3 +1,9 @@
+# Sorting Algorithm Visualizer
+
+Geolocation-based calculator that shows moon properties for any given date and set of coordinates, such as rise/set times, phase and illumination.
+
+![Sample Test](https://github.com/pmulard/Moon-Phase-Calculator/blob/master/public/sampleTest.gif)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

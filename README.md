@@ -1,4 +1,4 @@
-# Sorting Algorithm Visualizer
+# Moon Phase Calculator
 
 Geolocation-based calculator that shows moon properties for any given date and set of coordinates, such as rise/set times, phase and illumination.
 

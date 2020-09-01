@@ -1,5 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
 import './Calculator.css';
 import Button from 'react-bootstrap/Button';
 import { GoogleApiWrapper, InfoWindow, Marker  } from 'google-maps-react';
